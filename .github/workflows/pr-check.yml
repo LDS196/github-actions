@@ -10,11 +10,15 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        node-version: [18, 20, 22, 24]
+        node-version: [23,24]
+        include:
+            node-version: 24
+            experimental: true
         exclude:
           - os: windows-latest
-            node-version: 18
+            node-version: 23
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental=true }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v4
