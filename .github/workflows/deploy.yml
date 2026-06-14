@@ -18,3 +18,12 @@ jobs:
  
       - name: Запуск тестов
         run: npm run test
+
+      - name: Логин в Docker Hub
+        run: echo "${{ secrets.DOCKER_PASS }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
+ 
+      - name: Сборка Docker-образа
+        run: docker build -t ${{ secrets.DOCKER_USER }}/my-node-app:${{ github.sha }} .
+ 
+      - name: Публикация Docker-образа
+        run: docker push ${{ secrets.DOCKER_USER }}/my-node-app:${{ github.sha }} 
