@@ -1,0 +1,11 @@
+services:
+  backend:
+    build: .
+    container_name: backend
+    ports:
+      - "4545:4545"
+    environment:
+      PORT: 4545
+    env_file:
+      - .env
+    restart: unless-stopped

@@ -1,29 +1,40 @@
-name: CI Pipeline
+name: Deploy
 
 on:
   push:
-    branches: [main] # Запускать только при пуше в ветку main
+    branches: [main]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest # Используем GitHub-hosted runner с Ubuntu
+  checks:
+    uses: ./.github/workflows/pr-check.yml
 
+  publishing:
+    needs: checks
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3 # Клонирует код из репозитория
-      - name: Установка зависимостей
-        run: npm ci
- 
-      - name: Линтинг
-        run: npm run lint
- 
-      - name: Запуск тестов
-        run: npm run test
+      - uses: actions/checkout@v3
 
       - name: Логин в Docker Hub
         run: echo "${{ secrets.DOCKER_PASS }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
- 
+
       - name: Сборка Docker-образа
         run: docker build -t ${{ secrets.DOCKER_USER }}/my-node-app:${{ github.sha }} .
- 
+
       - name: Публикация Docker-образа
-        run: docker push ${{ secrets.DOCKER_USER }}/my-node-app:${{ github.sha }} 
+        run: docker push ${{ secrets.DOCKER_USER }}/my-node-app:${{ github.sha }}
+
+  deploy:
+    needs: publishing
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /var/www/myapp/backend
+            git pull origin main
+            docker compose up --build -d backend
