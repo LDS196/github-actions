@@ -10,9 +10,9 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        node-version: [23,24]
+        node-version: [23, 24]
         include:
-            node-version: 24
+          - node-version: 24
             experimental: true
         exclude:
           - os: windows-latest
