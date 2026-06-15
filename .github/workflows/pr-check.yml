@@ -18,6 +18,13 @@ jobs:
     continue-on-error: ${{ matrix.experimental==true }}
     steps:
       - uses: actions/checkout@v3
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: 'node_modules'
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
