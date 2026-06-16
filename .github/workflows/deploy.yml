@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Логин в Docker Hub
-        run: echo "${{ secrets.DOCKER_PASS }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
+        run: echo "${{ secrets.DOCKER_PASS1 }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
 
       - name: Сборка Docker-образа
         run: docker build -t ${{ secrets.DOCKER_USER }}/my-node-app:${{ github.sha }} .
@@ -40,16 +40,28 @@ jobs:
             cd /var/www/myapp
             docker compose up --build -d backend
 
+  notify:
+    needs: [checks,publishing, deploy]
+    runs-on: ubuntu-latest
+    if: always()   # ← запускается всегда, даже если checks или deploy упали
+    steps:
       - name: Notify Telegram
-        if: always()
         run: |
-          STATUS="${{ job.status }}"
-          if [ "$STATUS" = "success" ]; then
-            TEXT="✅ Деплой успешен%0A${{ github.repository }} @ ${{ github.ref_name }}"
-          else
+          CHECKS="${{ needs.checks.result }}"
+          PUBLISHING="${{ needs.publishing.result }}"
+          DEPLOY="${{ needs.deploy.result }}"
+ 
+          if [ "$CHECKS" != "success" ]; then
+            TEXT="❌ Тесты упали%0A${{ github.repository }} @ ${{ github.ref_name }}%0AСмотри: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          elif [ "$PUBLISHING" != "success" ]; then
+            TEXT="❌ Публикация упала%0A${{ github.repository }} @ ${{ github.ref_name }}%0AСмотри: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          elif [ "$DEPLOY" != "success" ]; then
             TEXT="❌ Деплой упал%0A${{ github.repository }} @ ${{ github.ref_name }}%0AСмотри: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          else
+            TEXT="✅ Деплой успешен%0A${{ github.repository }} @ ${{ github.ref_name }}"
           fi
+ 
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
-            -d "text=$TEXT"
+            -d "text=$TEXT"      
  
