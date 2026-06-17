@@ -11,16 +11,13 @@ jobs:
   build:
     needs: [checks]
     runs-on: ubuntu-latest
-    outputs:
-      image_sha: ${{ steps.build-push.outputs.image_sha }}  # передаём в deploy
     steps:
       - uses: actions/checkout@v4
- 
+
       - name: Вход в Docker Hub
         run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
- 
+
       - name: Build и push образа с двумя тегами
-        id: build-push
         env:
           IMAGE_SHA: ${{ secrets.DOCKER_USER }}/backend:sha-${{ github.sha }}
           IMAGE_LATEST: ${{ secrets.DOCKER_USER }}/backend:latest
@@ -28,23 +25,31 @@ jobs:
           docker build -t $IMAGE_SHA -t $IMAGE_LATEST .
           docker push $IMAGE_SHA
           docker push $IMAGE_LATEST
-          echo "image_sha=$IMAGE_SHA" >> $GITHUB_OUTPUT
- 
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to server
+        env:
+          IMAGE_SHA: ${{ secrets.DOCKER_USER }}/backend:sha-${{ github.sha }}
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: IMAGE_SHA
           script: |
             cd /var/www/myapp
- 
-            sed -i "s|DOCKER_IMAGE=.*|DOCKER_IMAGE=${{ needs.build.outputs.image_sha }}|" .env
 
+            if [ -z "$IMAGE_SHA" ]; then
+              echo "ERROR: IMAGE_SHA is empty"
+              exit 1
+            fi
+
+            sed -i "s|^DOCKER_IMAGE=.*|DOCKER_IMAGE=${IMAGE_SHA}|" .env
+
+            docker compose pull backend
             docker compose up -d --no-deps backend
  
   notify:
