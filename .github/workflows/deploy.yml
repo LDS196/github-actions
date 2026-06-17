@@ -17,13 +17,13 @@ jobs:
       - uses: actions/checkout@v4
  
       - name: Вход в Docker Hub
-        run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
+        run: docker login -u ${{ vars.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
  
       - name: Build и push образа с двумя тегами
         id: build-push
         env:
-          IMAGE_SHA: ${{ secrets.DOCKER_USER }}/backend:sha-${{ github.sha }}
-          IMAGE_LATEST: ${{ secrets.DOCKER_USER }}/backend:latest
+          IMAGE_SHA: ${{ vars.DOCKER_USER }}/backend:sha-${{ github.sha }}
+          IMAGE_LATEST: ${{ vars.DOCKER_USER }}/backend:latest
         run: |
           docker build -t $IMAGE_SHA -t $IMAGE_LATEST .
           docker push $IMAGE_SHA
