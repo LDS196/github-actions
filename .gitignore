@@ -26,4 +26,4 @@ Thumbs.db
 
 # Test coverage
 coverage/
-deployment/secret.yaml
+*secret.yaml
