@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend-api
+  template:
+    metadata:
+      labels:
+        app: backend-api
+    spec:
+      imagePullSecrets:
+        - name: dockerhub-cred
+      containers:
+        - name: backend-api
+          image: lihachev/backend:sha-02bae02bd6e45c07558a0f1baeb3e99889a902e6
+          ports:
+            - containerPort: 4545
+          envFrom:
+            - configMapRef:
+                name: backend-config
+            - secretRef:
+                name: backend-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-api-service
+spec:
+  selector:
+    app: backend-api
+  ports:
+    - port: 4545
+      targetPort: 4545
+  type: ClusterIP
+            
