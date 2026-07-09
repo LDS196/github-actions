@@ -16,7 +16,7 @@ spec:
         - name: dockerhub-cred
       containers:
         - name: backend-api
-          image: lihachev/backend:sha-02bae02bd6e45c07558a0f1baeb3e99889a902e6
+          image: ${IMAGE}
           ports:
             - containerPort: 4545
           envFrom:
