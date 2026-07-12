@@ -1,6 +1,6 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import {Counter, Histogram} from 'prom-client';
+import { Counter, Histogram } from 'prom-client';
 
 interface ExpressRoute {
   path: string;
@@ -31,7 +31,11 @@ export class MetricsMiddleware implements NestMiddleware {
         route,
         status_code: res.statusCode,
       });
-      httpRequestsTotal.inc({ method: req.method, route, status_code: res.statusCode });
+      httpRequestsTotal.inc({
+        method: req.method,
+        route,
+        status_code: res.statusCode,
+      });
     });
 
     next();
