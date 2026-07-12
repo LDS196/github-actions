@@ -1,0 +1,38 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: backend-api
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: backend-api
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70   # target: 70% от CPU request
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80   # target: 80% от memory request
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300   # ждать 5 минут перед уменьшением
+      policies:
+        - type: Percent
+          value: 25                     # уменьшать не более чем на 25% за раз
+          periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 0    # масштабировать вверх немедленно
+      policies:
+        - type: Pods
+          value: 4                     # добавлять не более 4 Pod за раз
+          periodSeconds: 60        
