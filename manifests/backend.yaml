@@ -23,7 +23,7 @@ spec:
               memory: "5Gi"
             limits:
               cpu: "72m"
-              memory: "120Mi"
+              #memory: "120Mi"
           ports:
             - containerPort: 4545
           envFrom:
