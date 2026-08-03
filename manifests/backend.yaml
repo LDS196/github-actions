@@ -61,6 +61,7 @@ spec:
   selector:
     app: backend-api
   ports:
+    - name: 80
     - port: 4545
       targetPort: 4545
   type: ClusterIP
