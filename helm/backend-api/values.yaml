@@ -1,0 +1,32 @@
+image:
+  name: lihachev/backend:latest
+  tag: "latest"
+  pullSecret: dockerhub-cred
+ 
+backend:
+  port: 4545
+ 
+resources:
+  requests:
+    cpu: "60m"
+    memory: "100Mi"
+  limits:
+    cpu: "100m"
+    memory: "120Mi"
+ 
+config:
+  NODE_ENV: "production"
+
+secret:
+  databaseUrl: "postgresql://postgres:postgres@postgres-0.postgres.default.svc.cluster.local:5432/postgres"
+ 
+ingress:
+  host: api.lds196.ru
+  tlsSecret: backend-api-tls
+  clusterIssuer: letsencrypt-prod
+ 
+hpa:
+  minReplicas: 1
+  maxReplicas: 5
+  cpuUtilization: 70
+  memoryUtilization: 80
