@@ -19,11 +19,11 @@ spec:
           image: ${IMAGE}
           resources:
             requests:
-              cpu: "60m"
-              memory: "100Mi" 
+              cpu: "100m"
+              memory: "128Mi"
             limits:
-              cpu: "72m"
-              memory: "120Mi"
+              cpu: "200m"
+              memory: "256Mi"
           ports:
             - containerPort: 4545
           startupProbe:
