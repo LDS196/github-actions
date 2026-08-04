@@ -30,3 +30,4 @@ deployment/docker-secret.yaml
 deployment/secret.yaml
 manifests/docker-secret.yaml
 manifests/secret.yaml
+age-key.txt
