@@ -31,3 +31,5 @@ deployment/secret.yaml
 manifests/docker-secret.yaml
 manifests/secret.yaml
 age-key.txt
+argocd/argocd-deploy-key
+argocd/argocd-deploy-key.pub
