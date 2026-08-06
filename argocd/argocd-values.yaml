@@ -3,7 +3,7 @@ applicationSet:
  
 configs:
   cm:
-    url: https://argocd.lds196.ru
+    url: argocd.lds196.ru
     accounts.image-updater: apiKey
     helm.valuesFileSchemes: >-
       secrets+gpg-import, secrets+gpg-import-kubernetes, secrets+age-import,
@@ -14,7 +14,7 @@ configs:
   rbac:
     policy.csv: |
       p, github-actions, applications, *, *, allow
-      
+
 controller:
   replicas: 1
   metrics:
