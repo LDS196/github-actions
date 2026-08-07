@@ -48,6 +48,13 @@ jobs:
             --config=p/jwt \
             --error \
             --exclude=node_modules \
+            --exclude=workflows \
+            --exclude=argocd \
+            --exclude=deployment \
+            --exclude=k8s \
+            --exclude=helm \
+            --exclude=manifests \
             --exclude=dist \
             --exclude=build \
             --exclude=kubernetes \
+            .
