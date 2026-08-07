@@ -51,3 +51,4 @@ jobs:
             --exclude=dist \
             --exclude=build \
             --exclude=kubernetes \
+            .
