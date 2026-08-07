@@ -6,6 +6,10 @@ on:
   workflow_call:
 
 jobs:
+  security-scan:
+    name: "Security scan"
+    uses: ./.github/workflows/sast-sca.yml@main
+
   check:
     strategy:
       matrix:
